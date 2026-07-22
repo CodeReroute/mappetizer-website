@@ -15,6 +15,8 @@ const TYPE_LABELS: Record<DeepLinkType, string> = {
   teaser: 'teaser',
 };
 
+// Set to true once the app is published on the stores.
+const STORE_LINKS_ENABLED = false;
 const IOS_STORE_URL = 'https://apps.apple.com/app/id0000000000';
 const ANDROID_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.mappetizer.app';
@@ -29,7 +31,6 @@ type DeepLinkLandingProps = {
 const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
   const [platform, setPlatform] = useState<Platform>('web');
   const [shareUrl, setShareUrl] = useState('');
-  const [triedOpen, setTriedOpen] = useState(false);
 
   const label = TYPE_LABELS[type];
   const deepLink = useMemo(
@@ -55,27 +56,15 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
         : 'web';
     setPlatform(currentPlatform);
 
+    // On mobile, try opening the installed app (including debug builds).
+    // Do not auto-redirect to the store while the app is still in development.
     if (currentPlatform === 'web' || !id) return;
 
-    // Try opening the app; if it is not installed the store fallback runs shortly after.
-    const fallbackTimer = setTimeout(() => {
-      setTriedOpen(true);
-      window.location.href = currentPlatform === 'ios' ? IOS_STORE_URL : ANDROID_STORE_URL;
-    }, 1800);
+    const timer = setTimeout(() => {
+      window.location.href = deepLink;
+    }, 300);
 
-    window.location.href = deepLink;
-
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        clearTimeout(fallbackTimer);
-      }
-    };
-    document.addEventListener('visibilitychange', onVisibilityChange);
-
-    return () => {
-      clearTimeout(fallbackTimer);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-    };
+    return () => clearTimeout(timer);
   }, [deepLink, id]);
 
   const openApp = () => {
@@ -102,45 +91,43 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
             <>
               <h1 className={styles['main-heading']}>Open in the Mappetizer app</h1>
               <p className={styles['sub-heading']}>
-                Scan the QR code on your phone to view this {label}. If you do
-                not have the app yet, you will be asked to install it.
+                Scan the QR code on your phone to open this {label} in the app.
               </p>
               {shareUrl && (
                 <div className={styles['qr-container']}>
                   <QRCode value={shareUrl} size={200} />
                   <p className={styles['share-url']}>
-                    Scan to open or download the app
+                    Scan to open the app
                   </p>
                 </div>
               )}
-              <div className={styles['store-links']}>
-                <a
-                  className={styles['submit-button']}
-                  href={IOS_STORE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Download on the App Store
-                </a>
-                <a
-                  className={styles['submit-button']}
-                  href={ANDROID_STORE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Get it on Google Play
-                </a>
-              </div>
+              {STORE_LINKS_ENABLED && (
+                <div className={styles['store-links']}>
+                  <a
+                    className={styles['submit-button']}
+                    href={IOS_STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download on the App Store
+                  </a>
+                  <a
+                    className={styles['submit-button']}
+                    href={ANDROID_STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Get it on Google Play
+                  </a>
+                </div>
+              )}
             </>
           ) : (
             <>
-              <h1 className={styles['main-heading']}>
-                {triedOpen ? 'Install Mappetizer' : 'Open in Mappetizer'}
-              </h1>
+              <h1 className={styles['main-heading']}>Open in Mappetizer</h1>
               <p className={styles['sub-heading']}>
-                {triedOpen
-                  ? `It looks like the app is not installed. Download Mappetizer to view this ${label}.`
-                  : `Opening this ${label} in the app. If nothing happens, open the app or install it below.`}
+                Tap below to open this {label} in the app. Make sure Mappetizer
+                is installed on this phone.
               </p>
               <div className={styles['actions']}>
                 <button
@@ -150,16 +137,18 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
                 >
                   Open in App
                 </button>
-                <a
-                  className={`${styles['submit-button']} ${styles['secondary-button']}`}
-                  href={storeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {platform === 'ios'
-                    ? 'Download on the App Store'
-                    : 'Get it on Google Play'}
-                </a>
+                {STORE_LINKS_ENABLED && (
+                  <a
+                    className={`${styles['submit-button']} ${styles['secondary-button']}`}
+                    href={storeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {platform === 'ios'
+                      ? 'Download on the App Store'
+                      : 'Get it on Google Play'}
+                  </a>
+                )}
               </div>
             </>
           )}

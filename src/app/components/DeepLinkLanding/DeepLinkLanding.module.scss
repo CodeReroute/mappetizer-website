@@ -1,0 +1,136 @@
+.main-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 20px;
+  background-color: var(--light-background);
+}
+
+.form-container {
+  max-width: 600px;
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.main-heading {
+  font-size: 2rem;
+  text-align: center;
+  letter-spacing: var(--second-letter-spacing);
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+}
+
+.sub-heading {
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: var(--second-letter-spacing);
+  margin-bottom: 30px;
+  color: #666;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20px 20px;
+  justify-content: space-between;
+  background-color: var(--light-background);
+  width: 100%;
+
+  .logo {
+    width: 180px;
+    height: auto;
+    margin-left: 20px;
+  }
+}
+
+.actions,
+.store-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.submit-button {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background-color: #4caf50;
+  color: white;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: #4caf50;
+  border: 2px solid #4caf50;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(76, 175, 80, 0.08);
+  }
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.share-url {
+  word-break: break-all;
+  font-size: 0.9rem;
+  color: #444;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .header {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    justify-content: center;
+
+    .logo {
+      width: 180px;
+      height: auto;
+      margin-left: 20px;
+    }
+  }
+
+  .main-container {
+    padding: 10px;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+
+  .main-heading {
+    font-size: 1.5rem;
+  }
+}

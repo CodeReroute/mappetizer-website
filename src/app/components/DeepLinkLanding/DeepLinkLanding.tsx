@@ -15,8 +15,8 @@ const TYPE_LABELS: Record<DeepLinkType, string> = {
   teaser: 'teaser',
 };
 
-// Set to true once the app is published on the stores.
-const STORE_LINKS_ENABLED = false;
+// Flip to true after the app is published. Never auto-redirect to the store.
+const SHOW_GET_THE_APP = false;
 const IOS_STORE_URL = 'https://apps.apple.com/app/id0000000000';
 const ANDROID_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.mappetizer.app';
@@ -42,34 +42,19 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setShareUrl(window.location.href);
+
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+    setPlatform(isIOS ? 'ios' : isAndroid ? 'android' : 'web');
   }, []);
 
   useEffect(() => {
-    const ua =
-      typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-    const isAndroid = /Android/i.test(ua);
-    const currentPlatform: Platform = isIOS
-      ? 'ios'
-      : isAndroid
-        ? 'android'
-        : 'web';
-    setPlatform(currentPlatform);
+    if (platform === 'web' || !id) return;
 
-    // On mobile, try opening the installed app (including debug builds).
-    // Do not auto-redirect to the store while the app is still in development.
-    if (currentPlatform === 'web' || !id) return;
-
-    const timer = setTimeout(() => {
-      window.location.href = deepLink;
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [deepLink, id]);
-
-  const openApp = () => {
+    // Development behavior: only open the custom scheme. No App Store redirect.
     window.location.href = deepLink;
-  };
+  }, [deepLink, id, platform]);
 
   return (
     <>
@@ -96,29 +81,7 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
               {shareUrl && (
                 <div className={styles['qr-container']}>
                   <QRCode value={shareUrl} size={200} />
-                  <p className={styles['share-url']}>
-                    Scan to open the app
-                  </p>
-                </div>
-              )}
-              {STORE_LINKS_ENABLED && (
-                <div className={styles['store-links']}>
-                  <a
-                    className={styles['submit-button']}
-                    href={IOS_STORE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Download on the App Store
-                  </a>
-                  <a
-                    className={styles['submit-button']}
-                    href={ANDROID_STORE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Get it on Google Play
-                  </a>
+                  <p className={styles['share-url']}>Scan to open the app</p>
                 </div>
               )}
             </>
@@ -126,27 +89,21 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
             <>
               <h1 className={styles['main-heading']}>Open in Mappetizer</h1>
               <p className={styles['sub-heading']}>
-                Tap below to open this {label} in the app. Make sure Mappetizer
-                is installed on this phone.
+                Opening this {label} in the app. If nothing happens, tap the
+                button below.
               </p>
               <div className={styles['actions']}>
-                <button
-                  type="button"
-                  className={styles['submit-button']}
-                  onClick={openApp}
-                >
-                  Open in App
-                </button>
-                {STORE_LINKS_ENABLED && (
+                <a className={styles['submit-button']} href={deepLink}>
+                  Open in Mappetizer
+                </a>
+                {SHOW_GET_THE_APP && (
                   <a
                     className={`${styles['submit-button']} ${styles['secondary-button']}`}
                     href={storeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {platform === 'ios'
-                      ? 'Download on the App Store'
-                      : 'Get it on Google Play'}
+                    Get the app
                   </a>
                 )}
               </div>

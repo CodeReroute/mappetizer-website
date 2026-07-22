@@ -34,7 +34,7 @@ const DeepLinkLanding: React.FC<DeepLinkLandingProps> = ({ type, id }) => {
 
   const label = TYPE_LABELS[type];
   const deepLink = useMemo(
-    () => `mappetizer://${type}/${encodeURIComponent(id)}`,
+    () => `myapp://${type}/${encodeURIComponent(id)}`,
     [type, id],
   );
   const storeUrl = platform === 'ios' ? IOS_STORE_URL : ANDROID_STORE_URL;

@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["8U75N4UAAQ.com.mappetizer"],
+        "components": [
+          { "/": "/user/*" },
+          { "/": "/restaurant/*" },
+          { "/": "/teaser/*" }
+        ],
+        "paths": ["/user/*", "/restaurant/*", "/teaser/*"]
+      }
+    ]
+  }
+}

@@ -7,9 +7,10 @@
         "components": [
           { "/": "/user/*" },
           { "/": "/restaurant/*" },
-          { "/": "/teaser/*" }
+          { "/": "/teaser/*" },
+          { "/": "/claim/*" }
         ],
-        "paths": ["/user/*", "/restaurant/*", "/teaser/*"]
+        "paths": ["/user/*", "/restaurant/*", "/teaser/*", "/claim/*"]
       }
     ]
   }
